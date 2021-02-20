@@ -1,6 +1,20 @@
 # DRL_Baselines
-================================================================
+----------------------------------------------------------------
 ## Build Deep Reinforcement Learning Baselines
+----------------------------------------------------------------
+- [] Deep Q Network
+- [] Deep Recurrent Q-Network
+- [] Double Deep Q Network
+- [] Dueling Deep Q Network
+- [] Duelling Double Deep Q Network
+----------------------------------------------------------------
+- [] Advantage Actor-Critic
+- [] Asynchronous Advantage Actor-Critic
+- [] Proximal Policy Optimization
+- [] Deep Deterministic Policy Gradient
+- [] Twin Delayed Deep Deterministic policy gradient
+- [] Behavior Cloning
+
 ----------------------------------------------------------------
 ## Installation
 ----------------------------------------------------------------
