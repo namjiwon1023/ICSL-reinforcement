@@ -1,6 +1,4 @@
-# DRL_Baselines
-
-## Build Deep Reinforcement Learning Baselines
+# Build Deep Reinforcement Learning Baselines
 
 - [ ] Deep Q Network
 - [ ] Deep Recurrent Q-Network
