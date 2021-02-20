@@ -1,7 +1,7 @@
 # DRL_Baselines
-----------------------------------------------------------------
+
 ## Build Deep Reinforcement Learning Baselines
-----------------------------------------------------------------
+
 - [ ] Deep Q Network
 - [ ] Deep Recurrent Q-Network
 - [ ] Double Deep Q Network
@@ -15,9 +15,9 @@
 - [ ] Twin Delayed Deep Deterministic policy gradient
 - [ ] Behavior Cloning
 
-----------------------------------------------------------------
+
 ## Installation
-----------------------------------------------------------------
+
 ### Anaconda install
 ```
 conda install pytorch torchvision torchaudio cudatoolkit=11.0 -c pytorch
