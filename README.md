@@ -7,7 +7,8 @@
 - [ ] Double Deep Q Network
 - [ ] Dueling Deep Q Network
 - [ ] Duelling Double Deep Q Network
-----------------------------------------------------------------
+
+
 - [ ] Advantage Actor-Critic
 - [ ] Asynchronous Advantage Actor-Critic
 - [ ] Proximal Policy Optimization
