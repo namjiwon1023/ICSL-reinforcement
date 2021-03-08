@@ -2,25 +2,25 @@
 
 ## Value Based
 
-- [x] Deep Q Network(DQN) (off-policy)
-- [x] Deep Recurrent Q-Network(DRQN) (off-policy)
-- [x] Distributional DQN (off-policy)
-- [x] Double Deep Q Network(Double DQN) (off-policy)
-- [x] Dueling Deep Q Network(Dueling DQN) (off-policy)
-- [x] Duelling Double Deep Q Network(D3QN) (off-policy)
+- [ ] Deep Q Network(DQN) (off-policy)
+- [ ] Deep Recurrent Q-Network(DRQN) (off-policy)
+- [ ] Distributional DQN (off-policy)
+- [ ] Double Deep Q Network(Double DQN) (off-policy)
+- [ ] Dueling Deep Q Network(Dueling DQN) (off-policy)
+- [ ] Duelling Double Deep Q Network(D3QN) (off-policy)
 ----------------------------------------------------------------
 
 ## Actor-Critic Method
 
-- [x] Advantage Actor-Critic(A2C) (on-policy)
-- [x] Asynchronous Advantage Actor-Critic(A3C) (on-policy)
-- [x] Proximal Policy Optimization(PPO) (on-policy)(Nearing off-policy)
-- [x] Deep Deterministic Policy Gradient(DDPG) (off-policy)
-- [x] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
-- [x] Soft Actor-Critic(SAC) (off-policy)
+- [ ] Advantage Actor-Critic(A2C) (on-policy)
+- [ ] Asynchronous Advantage Actor-Critic(A3C) (on-policy)
+- [ ] Proximal Policy Optimization(PPO) (on-policy)(Nearing off-policy)
+- [ ] Deep Deterministic Policy Gradient(DDPG) (off-policy)
+- [ ] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
+- [ ] Soft Actor-Critic(SAC) (off-policy)
 
 ## Imitation Learning / Inverse Reinforcement Learning
-- [x] Behavior Cloning
+- [ ] Behavior Cloning
 
 
 ## Required Python Libraries
