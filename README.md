@@ -1,30 +1,34 @@
-# Build Deep Reinforcement Learning Baselines
+# Deep Reinforcement Learning Baselines (Model Free)
 
-## Coding
+## Value Based
 
-- [ ] Deep Q Network
-- [ ] Deep Recurrent Q-Network
-- [ ] Double Deep Q Network
-- [ ] Dueling Deep Q Network
-- [ ] Duelling Double Deep Q Network
+- [ ] Deep Q Network(DQN) (off-policy)
+- [ ] Deep Recurrent Q-Network(DRQN) (off-policy)
+- [ ] Distributional DQN (off-policy)
+- [ ] Double Deep Q Network(Double DQN) (off-policy)
+- [ ] Dueling Deep Q Network(Dueling DQN) (off-policy)
+- [ ] Duelling Double Deep Q Network(D3QN) (off-policy)
 ----------------------------------------------------------------
-- [ ] Advantage Actor-Critic
-- [ ] Asynchronous Advantage Actor-Critic
-- [ ] Proximal Policy Optimization
-- [ ] Deep Deterministic Policy Gradient
-- [ ] Twin Delayed Deep Deterministic policy gradient
+
+## Actor-Critic Method
+
+- [ ] Advantage Actor-Critic(A2C) (on-policy)
+- [ ] Asynchronous Advantage Actor-Critic(A3C) (on-policy)
+- [ ] Proximal Policy Optimization(PPO) (on-policy)(Nearing off-policy)
+- [ ] Deep Deterministic Policy Gradient(DDPG) (off-policy)
+- [ ] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
+- [ ] Soft Actor-Critic(SAC) (off-policy)
+
+## Imitation Learning / Inverse Reinforcement Learning
 - [ ] Behavior Cloning
 
 
-## Installation
+## Required Python Libraries
 
-### Anaconda install
+### Pytorch install
 ```
-conda install pytorch torchvision torchaudio cudatoolkit=11.0 -c pytorch
-```
-
-### pip install
-```
+conda install pytorch torchvision torchaudio cudatoolkit=11.0 -c pytorch  
+  
 pip install torch torchvision
 ```
 
