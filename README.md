@@ -28,6 +28,11 @@
 
 ## Imitation Learning / Inverse Reinforcement Learning
 - [ ] Behavior Cloning
+- [ ] Generative Adversarial Imitation Learning
+
+## ReplayBuffer Structure
+- [ ] Prioritized Experience Replay
+- [ ] Hindsight Experience Replay
 
 
 ## Required Python Libraries
