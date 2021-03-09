@@ -17,7 +17,7 @@
 ### Online
 - [ ] Advantage Actor-Critic(A2C) (on-policy)
 - [ ] Asynchronous Advantage Actor-Critic(A3C) (on-policy)
-- [ ] Proximal Policy Optimization(PPO) (on-policy)(Nearing off-policy)
+- [ ] Proximal Policy Optimization(PPO)(GAE) (on-policy)(Nearing off-policy)
 - [ ] Deep Deterministic Policy Gradient(DDPG) (off-policy)
 - [ ] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
 - [ ] Soft Actor-Critic(SAC) (off-policy)
