@@ -21,6 +21,7 @@
 
 ### Online / Offline
 
+- [ ] Proximal Policy Gradient(PPG) (On-policy PPO + off-policy Critic[Let it share parameters with PPO's Critic])
 - [ ] Deep Deterministic Policy Gradient(DDPG) (off-policy)
 - [ ] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
 - [ ] Soft Actor-Critic(SAC) (off-policy)
