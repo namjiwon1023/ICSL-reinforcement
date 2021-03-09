@@ -1,7 +1,12 @@
 # Deep Reinforcement Learning Baselines (Model Free)(Under Construction)
 
 ## Value Based
-
+### Online
+- [ ] Deep Q Network(DQN) (off-policy)
+- [ ] Double Deep Q Network(Double DQN) (off-policy)
+- [ ] Dueling Deep Q Network(Dueling DQN) (off-policy)
+- [ ] Duelling Double Deep Q Network(D3QN) (off-policy)
+### Offline
 - [ ] Deep Q Network(DQN) (off-policy)
 - [ ] Double Deep Q Network(Double DQN) (off-policy)
 - [ ] Dueling Deep Q Network(Dueling DQN) (off-policy)
@@ -9,10 +14,14 @@
 ----------------------------------------------------------------
 
 ## Actor-Critic Method
-
+### Online
 - [ ] Advantage Actor-Critic(A2C) (on-policy)
 - [ ] Asynchronous Advantage Actor-Critic(A3C) (on-policy)
 - [ ] Proximal Policy Optimization(PPO) (on-policy)(Nearing off-policy)
+- [ ] Deep Deterministic Policy Gradient(DDPG) (off-policy)
+- [ ] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
+- [ ] Soft Actor-Critic(SAC) (off-policy)
+### Offline
 - [ ] Deep Deterministic Policy Gradient(DDPG) (off-policy)
 - [ ] Twin Delayed Deep Deterministic policy gradient(TD3) (off-policy)
 - [ ] Soft Actor-Critic(SAC) (off-policy)
