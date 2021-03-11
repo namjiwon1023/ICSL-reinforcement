@@ -4,6 +4,8 @@ from segment_tree import MinSegmentTree, SumSegmentTree
 import random
 import os
 import gym
+import skimage as io
+import cv2
 
 
 def plot_learning_curve(x, scores, figure_file):
@@ -240,3 +242,17 @@ class GaussianNoise:
             1.0, t / self.decay_period
         )
         return np.random.normal(0, sigma, size=self.action_dim)
+
+
+'''skimage and opencv image format conversion'''
+def skimage2opencv(src):
+    src *= 255
+    src.astype(np.int)
+    cv2.cvtColor(src,cv2.COLOR_RGB2BGR)
+    return src
+
+def opencv2skimage(src):
+    cv2.cvtColor(src,cv2.COLOR_BGR2RGB)
+    src.astype(np.float32)
+    src /= 255
+    return src
