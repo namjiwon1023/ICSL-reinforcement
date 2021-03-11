@@ -34,10 +34,10 @@ class QNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint))
         self.optimizer.load_state_dict(T.load(self.checkpoint + '_optimizer'))
 
-class DoubleQNetwork(nn.Module):
+class DoubleDQNetwork(nn.Module):
     def __init__(self, obs_dim, hidden_dim, act_dim, alpha,
                 dirPath='/home/nam/ICSL-reinforcement/Value_based'):
-        super(DoubleQNetwork, self).__init__()
+        super(DoubleDQNetwork, self).__init__()
 
         self.optimizer = optim.Adam(self.parameters(),lr=alpha)
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
@@ -62,10 +62,10 @@ class DoubleQNetwork(nn.Module):
         self.load_state_dict(T.load(self.checkpoint))
         self.optimizer.load_state_dict(T.load(self.checkpoint + '_optimizer'))
 
-class DuelingDQNetwork(nn.Module):
+class DuelingNetwork(nn.Module):
     def __init__(self, obs_dim, hidden_dim, act_dim, alpha,
                 dirPath='/home/nam/ICSL-reinforcement/Value_based'):
-        super(DuelingDQNetwork, self).__init__()
+        super(DuelingNetwork, self).__init__()
 
         self.optimizer = optim.Adam(self.parameters(),lr=alpha)
         self.device = T.device('cuda' if T.cuda.is_available() else 'cpu')
