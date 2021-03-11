@@ -3,6 +3,7 @@ import numpy as np
 from segment_tree import MinSegmentTree, SumSegmentTree
 import random
 import os
+import gym
 
 
 def plot_learning_curve(x, scores, figure_file):
@@ -182,3 +183,60 @@ class PrioritizedReplayBuffer(ReplayBufferBasis):
         weight = weight / max_weight
 
         return weight
+
+
+def _layer_norm(layer, std=1.0, bias_const=1e-6):
+    ''' Deep Reinforcement learning Neural network initialization
+            NN.apply(_layer_norm)
+    '''
+    if type(layer) == nn.Linear:
+        T.nn.init.orthogonal_(layer.weight, std)
+        T.nn.init.constant_(layer.bias, bias_const)
+
+
+class ActionNormalizer(gym.ActionWrapper):
+    '''OpenAI Gym
+    Map the continuous action range of the environment to [-1,1]
+    env = ActionNormalizer(env)
+    '''
+    def action(self, action: np.ndarray) -> np.ndarray:
+        low = self.action_space.low
+        high = self.action_space.high
+        scale_factor = (high - low) / 2
+        reloc_factor = high - scale_factor
+        action = action * scale_factor + reloc_factor
+        action = np.clip(action, low, high)
+        return action
+
+    def reverse_action(self, action: np.ndarray) -> np.ndarray:
+        low = self.action_space.low
+        high = self.action_space.high
+        scale_factor = (high - low) / 2
+        reloc_factor = high - scale_factor
+        action = (action - reloc_factor) / scale_factor
+        action = np.clip(action, -1.0, 1.0)
+        return action
+
+
+class GaussianNoise:
+    """Gaussian Noise.
+    Taken from https://github.com/vitchyr/rlkit
+    """
+    def __init__(
+        self,
+        action_dim,
+        min_sigma = 1.0,
+        max_sigma = 1.0,
+        decay_period = 1000000,
+    ):
+        self.action_dim = action_dim
+        self.max_sigma = max_sigma
+        self.min_sigma = min_sigma
+        self.decay_period = decay_period
+
+    def sample(self, t = 0) -> float:
+
+        sigma = self.max_sigma - (self.max_sigma - self.min_sigma) * min(
+            1.0, t / self.decay_period
+        )
+        return np.random.normal(0, sigma, size=self.action_dim)

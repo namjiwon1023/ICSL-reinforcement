@@ -43,7 +43,9 @@
 pip install torch torchvision  
 pip install numpy  
 pip install gym  
-pip install matplotlib
+pip install matplotlib  
+pip install segment-tree  
+pip install gym
 ```
 
 ## Papers
