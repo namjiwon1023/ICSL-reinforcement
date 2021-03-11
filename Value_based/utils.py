@@ -113,9 +113,9 @@ class PrioritizedReplayBuffer(ReplayBufferBasis):
         self.sum_tree = SumSegmentTree(tree_capacity)
         self.min_tree = MinSegmentTree(tree_capacity)
 
-    def store(self, obs, act, rew, next_obs, done):
+    def store(self, state, action, reward, next_state, done):
         """ Store experience and priority. """
-        super().store(obs, act, rew, next_obs, done)
+        super().store(state, action, reward, next_state, done)
         self.sum_tree[self.tree_ptr] = self.max_priority ** self.alpha
         self.min_tree[self.tree_ptr] = self.max_priority ** self.alpha
         self.tree_ptr = (self.tree_ptr + 1) % self.max_size
@@ -127,20 +127,20 @@ class PrioritizedReplayBuffer(ReplayBufferBasis):
 
         indices = self._sample_proportional()
 
-        obs = self.obs_buf[indices]
-        next_obs = self.next_obs_buf[indices]
-        acts = self.acts_buf[indices]
-        rews = self.rews_buf[indices]
-        done = self.done_buf[indices]
+        state = self.state[indices]
+        next_state = self.next_state[indices]
+        action = self.actions[indices]
+        reward = self.rewards[indices]
+        done = self.done[indices]
         weights = np.array([self._calculate_weight(i, beta) for i in indices])
 
-        return dict(obs=obs,
-                    next_obs=next_obs,
-                    acts=acts,
-                    rews=rews,
-                    done=done,
-                    weights=weights,
-                    indices=indices,
+        return dict(state = state,
+                    next_state = next_state,
+                    action = action,
+                    reward = reward,
+                    done = done,
+                    weights = weights,
+                    indices = indices,
                     )
 
     def update_priorities(self, indices, priorities):
