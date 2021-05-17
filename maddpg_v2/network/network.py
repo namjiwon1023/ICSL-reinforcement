@@ -5,13 +5,13 @@ import torch.nn.functional as F
 import os
 
 class CriticNetwork(nn.Module):
-    def __init__(self, beta, input_dims, fc1_dims, fc2_dims, n_agents, n_actions,
+    def __init__(self, beta, critic_dims, fc1_dims, fc2_dims, n_agents, n_actions,
                 name, chkpt_dir):
         super(CriticNetwork, self).__init__()
 
         self.chkpt_file = os.path.join(chkpt_dir, name)
 
-        self.fc1 = nn.Linear(input_dims + n_agents * n_actions, fc1_dims)
+        self.fc1 = nn.Linear(critic_dims + n_agents * n_actions, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.q = nn.Linear(fc2_dims, 1)
 
@@ -33,13 +33,19 @@ class CriticNetwork(nn.Module):
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.chkpt_file))
 
+    def reset_parameters(self, layers, std=1.0, bias_const=1e-6):
+        for layer in layers:
+            if isinstance(layer, nn.Linear):
+                nn.init.orthogonal_(layer.weight, std)
+                nn.init.constant_(layer.bias, bias_const)
+
 class ActorNetwork(nn.Module):
-    def __init__(self, alpha, input_dims, fc1_dims, fc2_dims, n_actions, name, chkpt_dir):
+    def __init__(self, alpha, actor_dims, fc1_dims, fc2_dims, n_actions, name, chkpt_dir):
         super(ActorNetwork, self).__init__()
 
         self.chkpt_file = os.path.join(chkpt_dir, name)
 
-        self.fc1 = nn.Linear(input_dims, fc1_dims)
+        self.fc1 = nn.Linear(actor_dims, fc1_dims)
         self.fc2 = nn.Linear(fc1_dims, fc2_dims)
         self.pi = nn.Linear(fc2_dims, n_actions)
 
@@ -60,3 +66,9 @@ class ActorNetwork(nn.Module):
 
     def load_checkpoint(self):
         self.load_state_dict(T.load(self.chkpt_file))
+
+    def reset_parameters(self, layers, std=1.0, bias_const=1e-6):
+        for layer in layers:
+            if isinstance(layer, nn.Linear):
+                nn.init.orthogonal_(layer.weight, std)
+                nn.init.constant_(layer.bias, bias_const)

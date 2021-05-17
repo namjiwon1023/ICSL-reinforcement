@@ -1,67 +1,118 @@
 import numpy as np
+import torch as T
 
 class MultiAgentReplayBuffer:
-    def __init__(self, max_size, critic_dims, actor_dims, n_actions, n_agents, batch_size):
-        self.mem_size = max_size
-        self.mem_cntr = 0
+    def __init__(self, critic_dims, actor_dims, n_actions, n_agents, args):
+        self.max_size = args.buffer_size
+
+        self.use_cuda = args.use_cuda
+        self.device = args.device
+
+        self.ptr, self.cur_len = 0, 0
+        self.count = 0
+
         self.n_agents = n_agents
         self.actor_dims = actor_dims
-        self.batch_size = batch_size
         self.n_actions = n_actions
 
-        self.state_memory = np.zeros((self.mem_size, critic_dims))
-        self.new_state_memory = np.zeros((self.mem_size, critic_dims))
-        self.reward_memory = np.zeros((self.mem_size, n_agents))
-        self.terminal_memory = np.zeros((self.mem_size,n_agents), dtype=bool)
+        if self.use_cuda:
+            self.state_buffer = T.empty((self.max_size, critic_dims), device=self.device)
+            self.next_state_buffer = T.empty((self.max_size, critic_dims), device=self.device)
+            self.reward_buffer = T.empty((self.max_size, n_agents), device=self.device)
+            self.done_buffer = T.empty((self.max_size,n_agents), dtype=bool, device=self.device)
+        else:
+            self.state_buffer = np.empty((self.max_size, critic_dims))
+            self.next_state_buffer = np.empty((self.max_size, critic_dims))
+            self.reward_buffer = np.empty((self.max_size, n_agents))
+            self.done_buffer = np.empty((self.max_size,n_agents), dtype=bool)
 
-        self.init_actor_memory()
+        self.actor_state_buffer = []
+        self.actor_next_state_buffer = []
+        self.actor_action_buffer = []
 
-    def init_actor_memory(self):
-        self.actor_state_memory = []
-        self.actor_new_state_memory = []
-        self.actor_action_memory = []
+        if self.use_cuda:
+            for i in range(self.n_agents):
+                self.actor_state_buffer.append(T.empty((self.max_size, self.actor_dims[i]), device=self.device))
 
-        for i in range(self.n_agents):
-            self.actor_state_memory.append(np.zeros((self.mem_size, self.actor_dims[i])))
+                self.actor_next_state_buffer.append(T.empty((self.max_size, self.actor_dims[i]), device=self.device))
 
-            self.actor_new_state_memory.append(np.zeros((self.mem_size, self.actor_dims[i])))
+                self.actor_action_buffer.append(T.empty((self.max_size, self.n_actions), device=self.device))
 
-            self.actor_action_memory.append(np.zeros((self.mem_size, self.n_actions)))
+        else:
+            for i in range(self.n_agents):
+                self.actor_state_buffer.append(np.empty((self.max_size, self.actor_dims[i])))
 
-    def store_transition(self, raw_obs, state, action, reward, raw_obs_, state_, done):
-        index = self.mem_cntr % self.mem_size
+                self.actor_next_state_buffer.append(np.empty((self.max_size, self.actor_dims[i])))
 
-        for agent_idx in range(self.n_agents):
-            self.actor_state_memory[agent_idx][index] = raw_obs[agent_idx]
-            self.actor_new_state_memory[agent_idx][index] = raw_obs_[agent_idx]
-            self.actor_action_memory[agent_idx][index] = action[agent_idx]
+                self.actor_action_buffer.append(np.empty((self.max_size, self.n_actions)))
 
-        self.state_memory[index] = state
-        self.new_state_memory[index] = state_
-        self.reward_memory[index] = reward
-        self.terminal_memory[index] = done
-        self.mem_cntr += 1
+    def store_transition(self, obs, state, action, reward, next_obs, next_state, done):
+        if self.use_cuda:
+            for agent_idx in range(self.n_agents):
+                self.actor_state_buffer[agent_idx][self.ptr] = T.as_tensor(obs[agent_idx], device=self.device)
+                self.actor_next_state_buffer[agent_idx][self.ptr] = T.as_tensor(next_obs[agent_idx], device=self.device)
+                self.actor_action_buffer[agent_idx][self.ptr] = T.as_tensor(action[agent_idx], device=self.device)
 
-    def sample_buffer(self):
-        max_mem = min(self.mem_cntr, self.mem_size)
+            self.state_buffer[self.ptr] = T.as_tensor(state, device=self.device)
+            self.next_state_buffer[self.ptr] = T.as_tensor(next_state, device=self.device)
+            self.reward_buffer[self.ptr] = T.as_tensor(reward, device=self.device)
+            self.done_buffer[self.ptr] = T.as_tensor(done, dtype=bool, device=self.device)
 
-        batch = np.random.choice(max_mem, self.batch_size, replace=False)
+        else:
+            for agent_idx in range(self.n_agents):
+                self.actor_state_buffer[agent_idx][self.ptr] = obs[agent_idx]
+                self.actor_next_state_buffer[agent_idx][self.ptr] = next_obs[agent_idx]
+                self.actor_action_buffer[agent_idx][self.ptr] = action[agent_idx]
 
-        states = self.state_memory[batch]
-        rewards = self.reward_memory[batch]
-        states_ = self.new_state_memory[batch]
-        terminal = self.terminal_memory[batch]
+            self.state_buffer[self.ptr] = state
+            self.next_state_buffer[self.ptr] = next_state
+            self.reward_buffer[self.ptr] = reward
+            self.done_buffer[self.ptr] = done
+
+        self.ptr = (self.ptr + 1) % self.max_size
+        self.cur_len = min(self.cur_len + 1, self.max_size)
+        self.count += 1
+
+    def sample_buffer(self, args):
+        if args.fast_start:
+            if self.count < args.batch_size:
+                index = np.random.choice(self.cur_len, self.count)
+            else:
+                index = np.random.choice(self.cur_len, args.batch_size, replace = False)
+        else:
+            index = np.random.choice(self.cur_len, args.batch_size, replace = False)
 
         actor_states = []
-        actor_new_states = []
+        actor_next_states = []
         actions = []
-        for agent_idx in range(self.n_agents):
-            actor_states.append(self.actor_state_memory[agent_idx][batch])
-            actor_new_states.append(self.actor_new_state_memory[agent_idx][batch])
-            actions.append(self.actor_action_memory[agent_idx][batch])
 
-        return actor_states, states, actions, rewards, actor_new_states, states_, terminal
+        if self.use_cuda:
+            states = T.as_tensor(self.state_buffer[index], device=self.device)
+            rewards = T.as_tensor(self.reward_buffer[index], device=self.device)
+            next_states = T.as_tensor(self.next_state_buffer[index], device=self.device)
+            done = T.as_tensor(self.done_buffer[index], dtype=bool, device=self.device)
 
-    def ready(self):
-        if self.mem_cntr >= self.batch_size:
+            for agent_idx in range(self.n_agents):
+                actor_states.append(T.as_tensor(self.actor_state_buffer[agent_idx][index], device=self.device))
+                actor_next_states.append(T.as_tensor(self.actor_next_state_buffer[agent_idx][index], device=self.device))
+                actions.append(T.as_tensor(self.actor_action_buffer[agent_idx][index], device=self.device))
+
+        else:
+            states = self.state_buffer[index]
+            rewards = self.reward_buffer[index]
+            next_states = self.next_state_buffer[index]
+            done = self.done_buffer[index]
+
+            for agent_idx in range(self.n_agents):
+                actor_states.append(self.actor_state_buffer[agent_idx][index])
+                actor_next_states.append(self.actor_next_state_buffer[agent_idx][index])
+                actions.append(self.actor_action_buffer[agent_idx][index])
+
+        return actor_states, states, actions, rewards, actor_next_states, next_states, done
+
+    def ready(self, args):
+        if self.cur_len >= args.batch_size:
             return True
+
+    def __len__(self):
+        return self.cur_len
