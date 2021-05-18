@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import torch as T
 import torch.nn as nn
 import random
+import os
+import ImageSequenceClip
 
 def obs_list_to_state_vector(observation):
     state = np.array([])
@@ -36,7 +38,7 @@ def _Static_plot(scores, figure_file):
     plt.title('Return')
     plt.savefig(figure_file)
 
-def _plot(scores, eval_rewards):
+def _Dynamic_plot(scores, eval_rewards):
     plt.subplot(121)
     z = [c+1 for c in range(len(scores))]
     running_avg = np.zeros(len(scores))

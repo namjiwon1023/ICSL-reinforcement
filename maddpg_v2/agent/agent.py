@@ -13,8 +13,8 @@ class Agent:
         self.n_actions = n_actions
         self.agent_name = 'agent_%s' % agent_idx
 
-        self.actor = ActorNetwork(actor_dims, n_actions, name=self.agent_name+'_actor', self.args)
-        self.critic = CriticNetwork(critic_dims, n_agents, n_actions, name=self.agent_name+'_critic', self.args)
+        self.actor = ActorNetwork(actor_dims, n_actions, self.agent_name + '_actor', self.args)
+        self.critic = CriticNetwork(critic_dims, n_agents, n_actions, self.agent_name + '_critic', self.args)
 
         self.actor_target = copy.deepcopy(self.actor)
         self.actor_target.eval()
@@ -25,13 +25,6 @@ class Agent:
         self.critic_target.eval()
         for q in self.critic_target.parameters():
             q.requires_grad = False
-
-        if not os.path.exists(self.args.save_dir):
-            os.mkdir(self.args.save_dir)
-
-        self.model_path = self.args.save_dir + '/' + self.args.scenario_name
-        if not os.path.exists(self.model_path):
-            os.mkdir(self.model_path)
 
     def choose_action(self, observation):
         with T.no_grad():
