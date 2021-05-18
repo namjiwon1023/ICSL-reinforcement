@@ -11,16 +11,30 @@ def obs_list_to_state_vector(observation):
         state = np.concatenate([state, obs])
     return state
 
-def _random_seed(args):
+def _random_seed(seed):
     if T.backends.cudnn.enabled:
         T.backends.cudnn.benchmark = False
         T.backends.cudnn.deterministic = True
 
-    T.manual_seed(args.seed)
-    T.cuda.manual_seed(args.seed)
-    np.random.seed(args.seed)
-    random.seed(args.seed)
+    T.manual_seed(seed)
+    T.cuda.manual_seed(seed)
+    np.random.seed(seed)
+    random.seed(seed)
     print('Using GPU : ', T.cuda.is_available() , ' |  Seed : ', seed)
+
+
+def _Static_plot(scores, figure_file):
+    z = [c+1 for c in range(len(scores))]
+    running_avg = np.zeros(len(scores))
+    for i in range(len(running_avg)):
+        running_avg[i] = np.mean(scores[max(0, i-10):(i+1)])
+    plt.plot(scores, "r-", linewidth=1.5, label="Episode Reward")
+    plt.plot(z, running_avg, "b-", linewidth=1.5, label="Avg Reward")
+    plt.xlabel("Episode")
+    plt.ylabel("Total Reward")
+    plt.legend(loc="best", shadow=True)
+    plt.title('Return')
+    plt.savefig(figure_file)
 
 def _plot(scores, eval_rewards):
     plt.subplot(121)

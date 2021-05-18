@@ -1,6 +1,7 @@
 import torch as T
 import torch.nn.functional as F
 from agent.agent import Agent
+from utils.ReplayBuffer import MultiAgentReplayBuffer
 
 class MADDPG:
     def __init__(self, actor_dims, critic_dims, n_agents, n_actions, args):
@@ -10,6 +11,7 @@ class MADDPG:
         self.n_actions = n_actions
         for agent_idx in range(self.n_agents):
             self.agents.append(Agent(actor_dims[agent_idx], critic_dims, n_actions, n_agents, agent_idx, self.args))
+        self.memory = MultiAgentReplayBuffer(critic_dims, actor_dims, n_actions, n_agents, self.args)
 
     def save_checkpoint(self):
         print('... saving checkpoint ...')
@@ -29,14 +31,14 @@ class MADDPG:
 
         return actions
 
-    def learn(self, memory):
-        if not memory.ready():
+    def learn(self):
+        if not self.memory.ready():
             return
 
         if self.args.use_cuda:
-            actor_states, states, actions, rewards, actor_next_states, next_states, dones = memory.sample_buffer(self.args.batch_size)
+            actor_states, states, actions, rewards, actor_next_states, next_states, dones = self.memory.sample_buffer(self.args.batch_size)
         else:
-            actor_states, states, actions, rewards, actor_next_states, next_states, dones = memory.sample_buffer(self.args.batch_size)
+            actor_states, states, actions, rewards, actor_next_states, next_states, dones = self.memory.sample_buffer(self.args.batch_size)
 
             states = T.as_tensor(states, dtype=T.float, device=self.args.device)
             actions = T.as_tensor(actions, dtype=T.float, device=self.args.device)
