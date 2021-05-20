@@ -12,11 +12,11 @@ class Agent:
         self.device = self.args.device
         self.agent_name = 'agent_%s' % agent_id
 
-        self.actor = ActorNetwork(args, agent_id, self.agent_name)
-        self.critic = CriticNetwork(args, self.agent_name)
+        self.actor = ActorNetwork(args, agent_id, self.agent_name + '_actor')
+        self.critic = CriticNetwork(args, self.agent_name + '_critic_target')
 
-        self.actor_target = ActorNetwork(args, agent_id, self.agent_name)
-        self.critic_target = CriticNetwork(args, self.agent_name)
+        self.actor_target = ActorNetwork(args, agent_id, self.agent_name+ '_actor_target')
+        self.critic_target = CriticNetwork(args, self.agent_name + '_critic_target')
 
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.critic_target.load_state_dict(self.critic.state_dict())

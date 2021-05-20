@@ -33,8 +33,10 @@ if __name__ == '__main__':
     episode = 0
     model_path = args.save_dir + '/' + args.scenario_name
     if os.path.exists(model_path):
-        # maddpg_agents.load_checkpoint()
-        pass
+        if os.path.exists('agent_0_actor'):
+            maddpg_agents.load_checkpoint()
+        else:
+            pass
     else:
         if not os.path.exists(args.save_dir):
             os.mkdir(args.save_dir)
@@ -68,8 +70,10 @@ if __name__ == '__main__':
 
             maddpg_agents.learn()
             score += sum(r)
-            if time_step > 0 and time_step % 100 == 0:
-                print('episode', episode, 'time step', time_step, 'average score {:.1f}'.format(avg_score))
+            if episode > 0 and episode % 100 == 0:
+                print('episode : {} step : {} mean reward :{:.1f}'.format(episode, time_step, avg_score))
+            # if time_step > 0 and time_step % 100 == 0:
+            #     print('episode', episode, 'time step', time_step, 'average score {:.1f}'.format(avg_score))
             # if time_step > 0 and time_step % args.evaluate_rate == 0:
             #     returns.append(evaluate())
             #     plt.figure()
