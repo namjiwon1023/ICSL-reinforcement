@@ -2,6 +2,7 @@ import numpy as np
 from maddpg import MADDPG
 from buffer import MultiAgentReplayBuffer
 from make_env import make_env
+import time
 
 def obs_list_to_state_vector(observation):
     state = np.array([])
@@ -29,8 +30,8 @@ if __name__ == '__main__':
     MAX_STEPS = 25
     total_steps = 0
     score_history = []
-    evaluate = False
-    best_score = 0
+    evaluate = True
+    best_score = -np.inf
 
     if evaluate:
         maddpg_agents.load_checkpoint()
@@ -43,6 +44,7 @@ if __name__ == '__main__':
         while not any(done):
             if evaluate:
                 env.render()
+                time.sleep(0.5)
 
             actions = maddpg_agents.choose_action(obs)
             obs_, reward, done, info = env.step(actions)

@@ -6,7 +6,6 @@ import copy
 class Agent:
     def __init__(self, actor_dims, critic_dims, n_actions, n_agents, agent_idx, args):
         self.args = args
-        self.gamma = self.args.gamma
         self.tau = self.args.tau
         self.device = self.args.device
 
@@ -28,15 +27,21 @@ class Agent:
 
     def choose_action(self, observation):
         with T.no_grad():
-            state = T.as_tensor([observation], dtype=T.float, device=self.device)
-            actions = self.actor(state)
-            noise = T.rand(self.n_actions, device=self.device)
-            action = actions + noise
+            state = T.as_tensor([observation], dtype=T.float32, device=self.device)
+            pi = self.actor(state)
+            if self.args.explore and not self.args.evaluate:
+                noise = T.rand(self.n_actions, device=self.device)
+                action = pi + noise
+                action = T.clamp(action, -1, 1)
+            else:
+                action = T.clamp(pi, -1, 1)
 
         return action.detach().cpu().numpy()[0]
 
-    def _soft_update_target_network(self):
-        tau = self.args.tau
+    def _soft_update_target_network(self, tau=None):
+        if tau == None:
+            tau = self.args.tau
+
         with T.no_grad():
             for t_p, l_p in zip(self.actor_target.parameters(), self.actor.parameters()):
                 t_p.data.copy_(tau * l_p.data + (1 - tau) * t_p.data)

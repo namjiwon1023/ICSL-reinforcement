@@ -5,6 +5,7 @@ from utils.utils import obs_list_to_state_vector, _random_seed, _Static_plot
 from utils.arguments import get_args
 import matplotlib.pyplot as plt
 import os
+from tqdm import tqdm
 
 def evaluate(env, agents, args):
     returns = []
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     args = get_args()
     _random_seed(args.seed)
 
-    env = make_env(args.scenario_name)
+    env = make_env(args.scenario_name, args.benchmark)
 
     n_agents = env.n
 
@@ -49,10 +50,13 @@ if __name__ == '__main__':
 
     total_steps = 0
     score_history = []
-    best_score = 0
+    best_score = -np.inf
 
     if not args.evaluate:
-        print('-----------learning start--------------')
+        print('-----------------------------------------------------')
+        print('-----------------learning start----------------------')
+        print('-----------------------------------------------------')
+        returns = []
         for i in range(1, args.total_episodes + 1):
             obs = env.reset()
             state = obs_list_to_state_vector(obs)
@@ -74,7 +78,7 @@ if __name__ == '__main__':
 
                 maddpg_agents.memory.store_transition(obs, state, actions, reward, obs_, next_state, done)
 
-                if total_steps % 100 == 0 and not args.evaluate:
+                if total_steps % 100 == 0 :
                     maddpg_agents.learn()
 
                 obs = obs_
@@ -83,8 +87,16 @@ if __name__ == '__main__':
                 total_steps += 1
                 episode_step += 1
 
+                # if total_steps % args.evaluate_rate == 0 :
+                #     returns.append(evaluate(env, maddpg_agents, args))
+                #     plt.figure()
+                #     plt.plot(range(len(returns)), returns)
+                #     plt.xlabel('episode * ' + str(args.evaluate_rate / args.max_episode_len))
+                #     plt.ylabel('average returns')
+                #     plt.savefig(model_path + '/plt.png', format='png')
+
             score_history.append(score)
-            avg_score = np.mean(score_history[-100:])
+            avg_score = np.mean(score_history[-10:])
 
             if not args.evaluate:
                 if avg_score > best_score:
@@ -93,12 +105,17 @@ if __name__ == '__main__':
 
             if i % args.print_iter == 0 and i > 0:
                 print('episode', i, 'average score {:.1f}'.format(avg_score))
-                _Static_plot(score_history, args.save_dir + '/' + args.scenario_name)
 
             if total_steps >= args.time_steps:
+                print('-------------------------------------------')
                 print('Exceed the total number of training steps !')
                 print('Over !')
+                print('-------------------------------------------')
+                _Static_plot(score_history, args.save_dir + '/' + args.scenario_name)
                 break
     else:
-        print('-----------evaluate start--------------')
-        evaluate(env, args, maddpg_agents)
+        print('-----------------------------------------------------')
+        print('-----------------evaluate start----------------------')
+        print('-----------------------------------------------------')
+        returns = evaluate(env, maddpg_agents, args)
+        print('Average returns is', returns)

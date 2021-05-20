@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 import torch as T
 import torch.nn as nn
 import random
-import os
-import ImageSequenceClip
+from moviepy.editor import ImageSequenceClip
 
 def obs_list_to_state_vector(observation):
     state = np.array([])
@@ -37,6 +36,7 @@ def _Static_plot(scores, figure_file):
     plt.legend(loc="best", shadow=True)
     plt.title('Return')
     plt.savefig(figure_file)
+
 
 def _Dynamic_plot(scores, eval_rewards):
     plt.subplot(121)

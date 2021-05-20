@@ -31,7 +31,7 @@ class Agent:
         return action.detach().cpu().numpy()[0]
 
     def update_network_parameters(self, tau=None):
-        if tau = None:
+        if tau == None:
             tau = self.tau
 
         target_actor_params = self.target_actor.named_parameters()
