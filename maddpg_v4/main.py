@@ -71,7 +71,7 @@ if __name__ == '__main__':
             maddpg_agents.learn()
             score += sum(r)
             if episode > 0 and episode % 100 == 0:
-                print('episode : {} step : {} mean reward :{:.1f}'.format(episode, time_step, avg_score))
+                print('episode : {} mean reward :{:.1f}'.format(episode, avg_score))
             # if time_step > 0 and time_step % 100 == 0:
             #     print('episode', episode, 'time step', time_step, 'average score {:.1f}'.format(avg_score))
             # if time_step > 0 and time_step % args.evaluate_rate == 0:
