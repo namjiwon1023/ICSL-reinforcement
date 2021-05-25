@@ -10,16 +10,16 @@ class MADDPG:
         self.agent_id = agent_id
         self.train_step = 0
 
-        self.actor = Actor(args, agent_id)
-        self.critic = Critic(args)
+        self.actor = ActorNetwork(args, agent_id)
+        self.critic = CriticNetwork(args)
 
-        self.actor_target = Actor(args, agent_id)
+        self.actor_target = ActorNetwork(args, agent_id)
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.actor_target.eval()
         for p in self.actor_target.parameters():
             p.requires_grad = False
 
-        self.critic_target = Critic(args)
+        self.critic_target = CriticNetwork(args)
         self.critic_target.load_state_dict(self.critic.state_dict())
         self.critic_target.eval()
         for q in self.critic_target.parameters():
