@@ -34,7 +34,7 @@ class Runner:
                 s = self.env.reset()
             u = []
             actions = []
-            with torch.no_grad():
+            with T.no_grad():
                 for agent_id, agent in enumerate(self.agents):
                     action = agent.choose_action(s[agent_id], self.noise, self.epsilon)
                     u.append(action)
@@ -69,7 +69,7 @@ class Runner:
             for time_step in range(self.args.evaluate_episode_len):
                 self.env.render()
                 actions = []
-                with torch.no_grad():
+                with T.no_grad():
                     for agent_id, agent in enumerate(self.agents):
                         action = agent.select_action(s[agent_id], 0, 0)
                         actions.append(action)
