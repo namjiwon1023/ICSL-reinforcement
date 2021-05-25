@@ -1,4 +1,4 @@
-import torch
+import torch as T
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -21,11 +21,11 @@ class CriticNetwork(nn.Module):
         self.to(self.device)
 
     def forward(self, state, action):
-        state = torch.cat(state, dim=1)
+        state = T.cat(state, dim=1)
         for i in range(len(action)):
             action[i] /= self.max_action
-        action = torch.cat(action, dim=1)
-        x = torch.cat([state, action], dim=1)
+        action = T.cat(action, dim=1)
+        x = T.cat([state, action], dim=1)
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))

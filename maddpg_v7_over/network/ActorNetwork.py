@@ -23,7 +23,7 @@ class ActorNetwork(nn.Module):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = F.relu(self.fc3(x))
-        actions = self.max_action * torch.tanh(self.pi(x))
+        actions = self.max_action * T.tanh(self.pi(x))
 
         return actions
 
