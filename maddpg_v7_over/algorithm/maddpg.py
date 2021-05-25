@@ -38,8 +38,8 @@ class MADDPG:
 
 
         if os.path.exists(self.model_path + '/actor_params.pth'):
-            self.actor.load_state_dict(torch.load(self.model_path + '/actor_params.pth'))
-            self.critic.load_state_dict(torch.load(self.model_path + '/critic_params.pth'))
+            self.actor.load_state_dict(T.load(self.model_path + '/actor_params.pth'))
+            self.critic.load_state_dict(T.load(self.model_path + '/critic_params.pth'))
             print('Agent {} successfully loaded actor: {}'.format(self.agent_id,
                                                             self.model_path + '/actor_params.pth'))
             print('Agent {} successfully loaded critic: {}'.format(self.agent_id,
@@ -56,7 +56,7 @@ class MADDPG:
 
     def train(self, transitions, other_agents):
         for key in transitions.keys():
-            transitions[key] = T.tensor(transitions[key], dtype=torch.float32).to(self.args.device)
+            transitions[key] = T.tensor(transitions[key], dtype=T.float32).to(self.args.device)
         r = transitions['r_%d' % self.agent_id]
         o, u, o_next = [], [], []
         for agent_id in range(self.args.n_agents):
@@ -108,7 +108,7 @@ class MADDPG:
         model_path = os.path.join(model_path, 'agent_%d' % self.agent_id)
         if not os.path.exists(model_path):
             os.makedirs(model_path)
-        torch.save(self.actor.state_dict(), model_path + '/' + num + '_actor_params.pth')
-        torch.save(self.critic.state_dict(),  model_path + '/' + num + '_critic_params.pth')
+        T.save(self.actor.state_dict(), model_path + '/' + num + '_actor_params.pth')
+        T.save(self.critic.state_dict(),  model_path + '/' + num + '_critic_params.pth')
 
 
