@@ -71,7 +71,7 @@ class Runner:
                 actions = []
                 with T.no_grad():
                     for agent_id, agent in enumerate(self.agents):
-                        action = agent.select_action(s[agent_id], 0, 0)
+                        action = agent.choose_action(s[agent_id], 0, 0)
                         actions.append(action)
                 for i in range(self.args.n_agents, self.args.n_players):
                     actions.append([0, np.random.rand() * 2 - 1, 0, np.random.rand() * 2 - 1, 0])
