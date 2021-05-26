@@ -6,6 +6,7 @@ from utils.arguments import get_args
 import matplotlib.pyplot as plt
 import os
 from tqdm import tqdm
+import copy
 
 def evaluate(env, agents, args):
     returns = []
@@ -15,7 +16,9 @@ def evaluate(env, agents, args):
         for time_step in range(args.evaluate_episode_len):
             env.render()
             actions = agents.choose_action(s)
-            s_next, r, done, info = env.step(actions)
+            u = copy.deepcopy(actions)
+            u.append([0, np.random.rand() * 2 - 1, 0, np.random.rand() * 2 - 1, 0])
+            s_next, r, done, info = env.step(u)
             rewards += r[0]
             s = s_next
         returns.append(rewards)
@@ -28,7 +31,7 @@ if __name__ == '__main__':
 
     # env parameters
     env = make_env(args.scenario_name, args.benchmark)
-    n_agents = env.n
+    n_agents = env.n - 1
     actor_dims = []
     for i in range(n_agents):
         actor_dims.append(env.observation_space[i].shape[0])
@@ -40,34 +43,36 @@ if __name__ == '__main__':
     model_path = args.save_dir + '/' + args.scenario_name
 
     total_steps = 0
-    score_history = []
+    # score_history = []
 
     if not args.evaluate:
         print('-----------------------------------------------------')
         print('-----------------learning start----------------------')
         print('-----------------------------------------------------')
         returns = []
-        for i in range(1, args.total_episodes + 1):
+        for i in tqdm(range(1, args.total_episodes + 1)):
             obs = env.reset()
-            state = obs_list_to_state_vector(obs)
+            state = obs_list_to_state_vector(obs[:n_agents])
             score = 0
             episode_step = 0
-            np.savetxt("./Total_scores.txt", score_history, delimiter=",")
+            np.savetxt("./return.txt", returns, delimiter=",")
 
             while True:
                 actions = maddpg_agents.choose_action(obs)
+                u = copy.deepcopy(actions)
+                u.append([0, np.random.rand() * 2 - 1, 0, np.random.rand() * 2 - 1, 0])
 
-                obs_, reward, done, info = env.step(actions)
-                next_state = obs_list_to_state_vector(obs_)
+                obs_, reward, done, info = env.step(u)
+                next_state = obs_list_to_state_vector(obs_[:n_agents])
 
-                maddpg_agents.memory.store_transition(obs, state, actions, reward, obs_, next_state, done)
+                maddpg_agents.memory.store_transition(obs[:n_agents], state, actions, reward[:n_agents], obs_[:n_agents], next_state, done[:n_agents])
                 all_done = all(done)
                 terminal = (episode_step >= args.max_episode_len)
                 obs = obs_
 
                 maddpg_agents.learn()
 
-                score += sum(reward)
+                # score += sum(reward)
                 total_steps += 1
                 episode_step += 1
 
@@ -82,18 +87,18 @@ if __name__ == '__main__':
                 if all_done or terminal:
                     break
 
-            score_history.append(score)
-            avg_score = np.mean(score_history[-100:])
+            # score_history.append(score)
+            # avg_score = np.mean(score_history[-100:])
 
-            if i % args.print_iter == 0:
-                print('Episode : {} | Step : {} | Return : {} | Mean : {} |'.format(i, total_steps, score, avg_score))
+            # if i % args.print_iter == 0:
+            #     print('Episode : {} | Step : {} | Return : {} | Mean : {} |'.foramt(i, total_steps, score, avg_score))
 
             if total_steps >= args.time_steps:
                 print('-------------------------------------------')
                 print('Exceed the total number of training steps !')
                 print('Over !')
                 print('-------------------------------------------')
-                _Static_plot(score_history, args.save_dir + '/' + args.scenario_name)
+                # _Static_plot(score_history, args.save_dir + '/' + args.scenario_name)
                 break
     else:
         print('-----------------------------------------------------')

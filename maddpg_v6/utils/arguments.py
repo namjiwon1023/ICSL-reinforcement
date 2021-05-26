@@ -13,7 +13,7 @@ def get_args():
     parser.add_argument("--n-hiddens-1", type=int, default=64, help="Neural Networks hidden layers units")
     parser.add_argument("--n-hiddens-2", type=int, default=64, help="Neural Networks hidden layers units")
 
-    parser.add_argument("--scenario-name", type=str, default="simple_adversary", help="Environment Name")
+    parser.add_argument("--scenario-name", type=str, default="simple_tag", help="Environment Name")
 
     parser.add_argument("--benchmark", type=bool, default=False, help="whether you want to produce benchmarking data")
 
@@ -26,7 +26,7 @@ def get_args():
     parser.add_argument("--critic-lr", type=float, default=1e-3, help="learning rate of critic")
 
     parser.add_argument("--explore", type=bool, default=True, help="use noise")
-    parser.add_argument("--gamma", type=float, default=0.99, help="discount factor")
+    parser.add_argument("--gamma", type=float, default=0.95, help="discount factor")
     parser.add_argument("--tau", type=float, default=1e-2, help="parameter for updating the target network")
 
     parser.add_argument("--buffer-size", type=int, default=int(1e6), help="number of transitions can be stored in buffer")
