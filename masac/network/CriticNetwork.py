@@ -10,12 +10,26 @@ class CriticNetwork(nn.Module):
         self.device = args.device
 
         self.max_action = args.high_action
-        self.fc1 = nn.Linear(sum(args.obs_shape) + sum(args.action_shape), args.hidden_size_1)
-        self.fc2 = nn.Linear(args.hidden_size_1, args.hidden_size_2)
-        self.fc3 = nn.Linear(args.hidden_size_2, args.hidden_size_2)
-        self.value = nn.Linear(args.hidden_size_2, 1)
 
-        self.reset_parameters()
+        self.critic1 = nn.Sequential(nn.Linear(sum(args.obs_shape) + sum(args.action_shape), args.hidden_size_1),
+                                    nn.ReLU(),
+                                    nn.Linear(args.hidden_size_1, args.hidden_size_2),
+                                    nn.ReLU(),
+                                    nn.Linear(args.hidden_size_2, args.hidden_size_2),
+                                    nn.ReLU(),
+                                    nn.Linear(args.hidden_size_2, 1))
+
+
+        self.critic2 = nn.Sequential(nn.Linear(sum(args.obs_shape) + sum(args.action_shape), args.hidden_size_1),
+                                    nn.ReLU(),
+                                    nn.Linear(args.hidden_size_1, args.hidden_size_2),
+                                    nn.ReLU(),
+                                    nn.Linear(args.hidden_size_2, args.hidden_size_2),
+                                    nn.ReLU(),
+                                    nn.Linear(args.hidden_size_2, 1))
+
+        self.reset_parameters(self.critic1)
+        self.reset_parameters(self.critic2)
 
         self.optimizer = optim.Adam(self.parameters(), lr=args.critic_lr)
         self.to(self.device)
@@ -25,15 +39,15 @@ class CriticNetwork(nn.Module):
         for i in range(len(action)):
             action[i] /= self.max_action
         action = T.cat(action, dim=1)
-        x = T.cat([state, action], dim=1)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = F.relu(self.fc3(x))
-        q_value = self.value(x)
-        return q_value
 
-    def reset_parameters(self):
-        nn.init.xavier_uniform_(self.fc1.weight, gain=nn.init.calculate_gain('relu'))
-        nn.init.xavier_uniform_(self.fc2.weight, gain=nn.init.calculate_gain('relu'))
-        nn.init.xavier_uniform_(self.fc3.weight, gain=nn.init.calculate_gain('relu'))
-        nn.init.xavier_uniform_(self.value.weight, gain=nn.init.calculate_gain('relu'))
+        x = T.cat([state, action], dim=1)
+        Q1 = self.critic1(x)
+        Q2 = self.critic2(x)
+
+        return Q1, Q2
+
+    def reset_parameters(self, Sequential, std=1.0, bias_const=1e-6):
+        for layer in Sequential:
+            if isinstance(layer, nn.Linear):
+                nn.init.orthogonal_(layer.weight, std)
+                nn.init.constant_(layer.bias, bias_const)

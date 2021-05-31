@@ -15,11 +15,11 @@ class Agent:
             u = np.random.uniform(-self.args.high_action, self.args.high_action, self.args.action_shape[self.agent_id])
         else:
             inputs = T.tensor(o, dtype=T.float32).unsqueeze(0).to(self.args.device)
-            pi = self.policy.actor(inputs).squeeze(0)
-            u = pi.detach().cpu().numpy()
-            noise = noise_rate * self.args.high_action * np.random.randn(*u.shape)
-            u += noise
-            u = np.clip(u, -self.args.high_action, self.args.high_action)
+
+            #########          must test        #####################
+            pi, _ = self.policy.actor(inputs)
+            u = pi.squeeze(0).detach().cpu().numpy()
+
         return u.copy()
 
     def learn(self, transitions, other_agents):

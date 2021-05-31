@@ -2,6 +2,8 @@ import torch as T
 import os
 from network.ActorNetwork import ActorNetwork
 from network.CriticNetwork import CriticNetwork
+import torch.optim as optim
+import copy
 
 
 class MADDPG:
@@ -10,17 +12,16 @@ class MADDPG:
         self.agent_id = agent_id
         self.train_step = 0
 
+        self.target_entropy = -self.args.action_shape[self.agent_id]
+        self.log_alpha = T.zeros(1, requires_grad=True, device=self.args.device)
+        self.alpha = self.log_alpha.exp()
+
+        self.alpha_optimizer = optim.Adam([self.log_alpha], lr=self.args.alpha_lr)
+
         self.actor = ActorNetwork(args, agent_id)
         self.critic = CriticNetwork(args)
 
-        self.actor_target = ActorNetwork(args, agent_id)
-        self.actor_target.load_state_dict(self.actor.state_dict())
-        self.actor_target.eval()
-        for p in self.actor_target.parameters():
-            p.requires_grad = False
-
-        self.critic_target = CriticNetwork(args)
-        self.critic_target.load_state_dict(self.critic.state_dict())
+        self.critic_target = copy.deepcopy(self.critic)
         self.critic_target.eval()
         for q in self.critic_target.parameters():
             q.requires_grad = False
@@ -47,8 +48,6 @@ class MADDPG:
 
 
     def _soft_update_target_network(self):
-        for t_p, l_p in zip(self.actor_target.parameters(), self.actor.parameters()):
-            t_p.data.copy_((1 - self.args.tau) * t_p.data + self.args.tau * l_p.data)
 
         for t_p, l_p in zip(self.critic_target.parameters(), self.critic.parameters()):
             t_p.data.copy_((1 - self.args.tau) * t_p.data + self.args.tau * l_p.data)
@@ -71,30 +70,53 @@ class MADDPG:
             index = 0
             for agent_id in range(self.args.n_agents):
                 if agent_id == self.agent_id:
-                    u_next.append(self.actor_target(o_next[agent_id]))
+                    next_action, next_log_prob = self.actor(o_next[agent_id])
+                    u_next.append(next_action)
+
                 else:
-                    u_next.append(other_agents[index].policy.actor_target(o_next[agent_id]))
+                    next_action, next_log_prob = other_agents[index].policy.actor(o_next[agent_id])
+                    u_next.append(next_action)
+
                     index += 1
-            q_next = self.critic_target(o_next, u_next).detach()
 
-            target_q = (r.unsqueeze(1) + self.args.gamma * q_next).detach()
+            next_q_target_1, next_q_target_2 = self.critic_target(o_next, u_next)
+            next_q_target = T.min(next_q_target_1, next_q_target_2)
 
+            value_target = r.unsqueeze(1) + self.args.gamma * (next_q_target - self.alpha * next_log_prob)
 
-        q_value = self.critic(o, u)
-        critic_loss = (target_q - q_value).pow(2).mean()
-
-        u[self.agent_id] = self.actor(o[self.agent_id])
-        actor_loss = - self.critic(o, u).mean()
-
-        self.actor.optimizer.zero_grad()
-        actor_loss.backward()
-        self.actor.optimizer.step()
+        q_value_1, q_value_2 = self.critic(o, u)
+        critic_loss = (value_target - q_value_1).pow(2).mean() + (value_target - q_value_2).pow(2).mean()
 
         self.critic.optimizer.zero_grad()
         critic_loss.backward()
         self.critic.optimizer.step()
 
-        self._soft_update_target_network()
+        for p in self.critic.parameters():
+            p.requires_grad = False
+
+        new_action, new_log_prob = self.actor(o[self.agent_id])
+        u[self.agent_id] = new_action
+        q_1, q_2 = self.critic(o, u)
+        q = T.min(q_1, q_2)
+
+        actor_loss = (self.alpha * new_log_prob - q).mean()
+        alpha_loss = -self.log_alpha * (new_log_prob.detach() + self.target_entropy).mean()
+
+        self.actor.optimizer.zero_grad()
+        actor_loss.backward()
+        self.actor.optimizer.step()
+
+        self.alpha_optimizer.zero_grad()
+        alpha_loss.backward()
+        self.alpha_optimizer.step()
+
+        for p in self.critic.parameters():
+            p.requires_grad = True
+
+        self.alpha = self.log_alpha.exp()
+
+        if self.train_step % self.args.update_rate == 0:
+            self._soft_update_target_network()
 
         if self.train_step > 0 and self.train_step % self.args.save_rate == 0:
             self.save_model(self.train_step)
