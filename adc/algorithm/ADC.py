@@ -19,7 +19,7 @@ class ADCAgent:
             setattr(self, key, value)
 
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-        self.dirPath = './model'
+        self.dirPath = os.getcwd() + '/model'
 
         self.env = gym.make('Pendulum-v0')
         # self.env = RescaleAction(self.env, -1, 1)
