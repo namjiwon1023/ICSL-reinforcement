@@ -94,10 +94,9 @@ class ADCAgent:
                 mask = T.as_tensor(samples["mask"].reshape(-1, 1), device=self.device)
 
                 # critic update
-                next_action = self.actor_target(next_state)
-                next_q_value = self.critic_target(next_state, next_action)
+                next_q_value = self.critic_target(next_state)
                 value_target = reward + next_q_value * mask
-            q_eval = self.critic(state, action)
+            q_eval = self.critic(state)
 
             critic_loss = F.mse_loss(q_eval, value_target)
 
@@ -105,7 +104,7 @@ class ADCAgent:
             critic_loss.backward()
             self.critic.optimizer.step()
 
-            actor_loss = -self.critic(state, self.actor(state)).mean()
+            actor_loss = -self.critic(state).mean()
 
             self.actor.optimizer.zero_grad()
             actor_step_loss.backward()
