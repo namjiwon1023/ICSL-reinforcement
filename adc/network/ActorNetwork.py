@@ -5,18 +5,18 @@ import torch.nn.functional as F
 import os
 
 class ActorNetwork(nn.Module):
-    def __init__(self, n_states, n_actions, n_hiddens, alpha, device, max_action):
+    def __init__(self, n_states, n_actions, alpha, device, max_action):
         super(ActorNetwork, self).__init__()
         self.max_action = max_action
         self.device = device
         chkpt_dir = os.getcwd()
         self.checkpoint = os.path.join(chkpt_dir, 'actor_parameters.pth')
 
-        self.actor = nn.Sequential(nn.Linear(n_states, n_hiddens),
+        self.actor = nn.Sequential(nn.Linear(n_states, 30),
                                 nn.ReLU(),
-                                nn.Linear(n_hiddens, n_hiddens),
+                                nn.Linear(30, 30),
                                 nn.ReLU(),
-                                nn.Linear(n_hiddens, n_actions))
+                                nn.Linear(30, n_actions))
 
         self.reset_parameters(self.actor)
 

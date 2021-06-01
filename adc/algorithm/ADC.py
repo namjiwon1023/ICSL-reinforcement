@@ -26,12 +26,11 @@ class ADCAgent:
         self.n_states = self.env.observation_space.shape[0]
         self.n_actions = self.env.action_space.shape[0]
         self.max_action = float(self.env.action_space.high[0])
-        self.n_hiddens = int(2**6)
 
         self.memory = ReplayBuffer(self.memory_size, self.n_states, self.batch_size)
 
-        self.actor = ActorNetwork(self.n_states, self.n_actions, self.n_hiddens, self.actor_lr, self.device, self.max_action)
-        self.critic = CriticNetwork(self.n_states, self.n_actions, self.n_hiddens, self.critic_lr, self.device)
+        self.actor = ActorNetwork(self.n_states, self.n_actions, self.actor_lr, self.device, self.max_action)
+        self.critic = CriticNetwork(self.n_states, self.n_actions, self.critic_lr, self.device)
 
         self.actor_target = copy.deepcopy(self.actor)
         self.actor_target.eval()
