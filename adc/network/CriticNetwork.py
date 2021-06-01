@@ -5,9 +5,9 @@ import torch.nn.functional as F
 import os
 
 class CriticNetwork(nn.Module):
-    def __init__(self, n_states, n_actions, n_hiddens, alpha, device, chkpt_dir):
+    def __init__(self, n_states, n_actions, n_hiddens, alpha, device):
         super(CriticNetwork, self).__init__()
-
+        chkpt_dir = os.getcwd()
         self.device = device
         self.checkpoint = os.path.join(chkpt_dir, 'critic_parameters.pth')
 

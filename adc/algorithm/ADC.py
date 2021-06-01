@@ -19,7 +19,6 @@ class ADCAgent:
             setattr(self, key, value)
 
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
-        self.dirPath = os.getcwd() + '/model'
 
         self.env = gym.make('Pendulum-v0')
         # self.env = RescaleAction(self.env, -1, 1)
@@ -31,8 +30,8 @@ class ADCAgent:
 
         self.memory = ReplayBuffer(self.memory_size, self.n_states, self.batch_size)
 
-        self.actor = ActorNetwork(self.n_states, self.n_actions, self.n_hiddens, self.actor_lr, self.device, self.dirPath, self.max_action)
-        self.critic = CriticNetwork(self.n_states, self.n_actions, self.n_hiddens, self.critic_lr, self.device, self.dirPath)
+        self.actor = ActorNetwork(self.n_states, self.n_actions, self.n_hiddens, self.actor_lr, self.device, self.max_action)
+        self.critic = CriticNetwork(self.n_states, self.n_actions, self.n_hiddens, self.critic_lr, self.device)
 
         self.actor_target = copy.deepcopy(self.actor)
         self.actor_target.eval()
@@ -47,10 +46,8 @@ class ADCAgent:
 
         self.transition = list()
 
+        self.dirPath = os.getcwd() + '/' + 'actor_parameters.pth'
         if os.path.exists(self.dirPath):
-            os.makedirs(self.dirPath)
-
-        if os.path.exists(self.dirPath + '/' + 'actor_parameters.pth'):
             self.load_models()
         else:
             print('|------------------------------------|')
@@ -124,7 +121,7 @@ class ADCAgent:
             if e % self.target_update_interval == 0:
                 self.target_soft_update()
 
-        return value_losses, Policy_losses
+        return value_losses, Policy_losses, self.epsilon
 
     def save_models(self):
 

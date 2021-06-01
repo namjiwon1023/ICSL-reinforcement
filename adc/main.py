@@ -72,7 +72,7 @@ if __name__ == '__main__':
             score += reward
 
             if agent.total_step % agent.gradient_steps == 0 and agent.memory.ready():
-                value_losses,  Policy_losses = agent.learn()
+                value_losses,  Policy_losses, epsilon = agent.learn()
                 n_updates += 1
 
             if agent.total_step % agent.eval_steps == 0 and agent.memory.ready():
@@ -81,6 +81,7 @@ if __name__ == '__main__':
                 eval_rewards.append(eval_reward)
                 writer.add_scalar('Loss/Value', value_losses, n_updates)
                 writer.add_scalar('Loss/Policy', Policy_losses, n_updates)
+                writer.add_scalar('E-Greedy', epsilon, n_updates)
                 writer.add_scalar('Reward/Train', running_reward, agent.total_step)
                 writer.add_scalar('Reward/Test', eval_reward, agent.total_step)
                 print('| Episode : {} | Score : {} | Predict Score : {} | Avg score : {} |'.format(i, round(score, 2), round(eval_reward, 2), round(avg_score, 2)))
