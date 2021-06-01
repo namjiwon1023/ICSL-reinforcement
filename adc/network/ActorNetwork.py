@@ -11,7 +11,7 @@ class ActorNetwork(nn.Module):
         self.device = device
         self.checkpoint = os.path.join(chkpt_dir, 'actor_parameters.pth')
 
-        self.actor = T.Sequential(nn.Linear(n_states, n_hiddens),
+        self.actor = nn.Sequential(nn.Linear(n_states, n_hiddens),
                                 nn.ReLU(),
                                 nn.Linear(n_hiddens, n_hiddens),
                                 nn.ReLU(),

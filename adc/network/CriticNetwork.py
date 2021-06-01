@@ -11,16 +11,16 @@ class CriticNetwork(nn.Module):
         self.device = device
         self.checkpoint = os.path.join(chkpt_dir, 'critic_parameters.pth')
 
-        self.feature = T.Sequential(nn.Linear(n_states, n_hiddens),
+        self.feature = nn.Sequential(nn.Linear(n_states, n_hiddens),
                                     nn.ReLU(),
                                     )
 
-        self.state_value = T.Sequential(nn.Linear(n_hiddens, n_hiddens),
+        self.state_value = nn.Sequential(nn.Linear(n_hiddens, n_hiddens),
                                     nn.ReLU(),
                                     nn.Linear(n_hiddens, 1))
 
 
-        self.advantage = T.Sequential(nn.Linear(n_hiddens, n_hiddens),
+        self.advantage = nn.Sequential(nn.Linear(n_hiddens, n_hiddens),
                                     nn.ReLU(),
                                     nn.Linear(n_hiddens, n_actions))
 
