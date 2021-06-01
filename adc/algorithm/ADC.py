@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import copy
 import gym
-from gym.wrappers import RescaleAction
+# from gym.wrappers import RescaleAction
 import random
 
 from utils.ReplayBuffer import ReplayBuffer
@@ -22,15 +22,16 @@ class ADCAgent:
         self.dirPath = '/home/nam/ICSL-reinforcement/adc/model'
 
         self.env = gym.make('Pendulum-v0')
-        self.env = RescaleAction(self.env, -1, 1)
+        # self.env = RescaleAction(self.env, -1, 1)
 
         self.n_states = self.env.observation_space.shape[0]
         self.n_actions = self.env.action_space.shape[0]
+        self.max_action = float(self.env.action_space.high[0])
         self.n_hiddens = int(2**6)
 
         self.memory = ReplayBuffer(self.memory_size, self.n_states, self.batch_size)
 
-        self.actor = ActorNetwork(self.n_states, self.n_actions, self.n_hiddens, self.actor_lr, self.device, self.dirPath)
+        self.actor = ActorNetwork(self.n_states, self.n_actions, self.n_hiddens, self.actor_lr, self.device, self.dirPath, self.max_action)
         self.critic = CriticNetwork(self.n_states, self.n_actions, self.n_hiddens, self.critic_lr, self.device, self.dirPath)
 
         self.actor_target = copy.deepcopy(self.actor)

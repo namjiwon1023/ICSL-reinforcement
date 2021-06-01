@@ -4,9 +4,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class ActorNetwork(nn.Module):
-    def __init__(self, n_states, n_actions, n_hiddens, alpha, device, chkpt_dir):
+    def __init__(self, n_states, n_actions, n_hiddens, alpha, device, chkpt_dir, max_action):
         super(ActorNetwork, self).__init__()
-
+        self.max_action = max_action
         self.device = device
         self.checkpoint = os.path.join(chkpt_dir, 'actor_parameters.pth')
 
@@ -24,7 +24,7 @@ class ActorNetwork(nn.Module):
 
     def forward(self, state):
         action = self.actor(state)
-        out = T.tanh(action)
+        out = T.tanh(action) * self.max_action
 
         return out
 
