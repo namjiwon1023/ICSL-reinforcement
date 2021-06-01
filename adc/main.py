@@ -14,7 +14,7 @@ from network.ActorNetwork import ActorNetwork
 from network.CriticNetwork import CriticNetwork
 
 from algorithm.ADC import ADCAgent
-from utils import random_seed
+from utils.utils import random_seed
 
 if __name__ == '__main__':
     writer = SummaryWriter()
