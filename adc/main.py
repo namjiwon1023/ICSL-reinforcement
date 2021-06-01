@@ -14,11 +14,11 @@ from network.ActorNetwork import ActorNetwork
 from network.CriticNetwork import CriticNetwork
 
 from algorithm.ADC import ADCAgent
-from utils.utils import random_seed
+from utils.utils import _random_seed
 
 if __name__ == '__main__':
     writer = SummaryWriter()
-    random_seed(123)
+    _random_seed(123)
     params = {
                 'gamma' : 0.9,
                 'actor_lr' : 1e-3,
