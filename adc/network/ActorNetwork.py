@@ -2,6 +2,7 @@ import torch as T
 import torch.optim as optim
 import torch.nn as nn
 import torch.nn.functional as F
+import os
 
 class ActorNetwork(nn.Module):
     def __init__(self, n_states, n_actions, n_hiddens, alpha, device, chkpt_dir, max_action):
