@@ -89,11 +89,11 @@ class ADCAgent:
             self.learning_steps += 1
             with T.no_grad():
                 samples = self.memory.sample_batch(self.batch_size)
-                state = torch.FloatTensor(samples["state"]).to(device)
-                next_state = torch.FloatTensor(samples["next_state"]).to(device)
-                action = torch.FloatTensor(samples["action"].reshape(-1, 1)).to(device)
-                reward = torch.FloatTensor(samples["reward"].reshape(-1, 1)).to(device)
-                mask = torch.FloatTensor(samples["mask"].reshape(-1, 1)).to(device)
+                state = T.as_tensor(samples["state"], device=self.device)
+                next_state = T.as_tensor(samples["next_state"], device=self.device)
+                action = T.as_tensor(samples["action"].reshape(-1, 1), device=self.device)
+                reward = T.as_tensor(samples["reward"].reshape(-1, 1), device=self.device)
+                mask = T.as_tensor(samples["mask"].reshape(-1, 1), device=self.device)
 
                 # critic update
                 next_action = self.actor_target(next_state)
