@@ -48,7 +48,7 @@ class ADCAgent:
         self.transition = list()
 
         if os.path.exists(self.dirPath):
-            os.makedir(self.dirPath)
+            os.makedirs(self.dirPath)
 
         if os.path.exists(self.dirPath + '/' + 'actor_parameters.pth'):
             self.load_models()
