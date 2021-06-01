@@ -107,7 +107,7 @@ class ADCAgent:
             actor_loss = -self.critic(state).mean()
 
             self.actor.optimizer.zero_grad()
-            actor_step_loss.backward()
+            actor_loss.backward()
             self.actor.optimizer.step()
 
             self.epsilon = max(0.05, self.epsilon - 0.0000005)
