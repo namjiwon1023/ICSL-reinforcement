@@ -12,11 +12,11 @@ class ActorNetwork(nn.Module):
         chkpt_dir = os.getcwd()
         self.checkpoint = os.path.join(chkpt_dir, 'actor_parameters.pth')
 
-        self.actor = nn.Sequential(nn.Linear(n_states, 64),
+        self.actor = nn.Sequential(nn.Linear(n_states, 30),
                                 nn.ReLU(),
-                                nn.Linear(64, 64),
+                                nn.Linear(30, 30),
                                 nn.ReLU(),
-                                nn.Linear(64, n_actions))
+                                nn.Linear(30, n_actions))
 
         self.reset_parameters(self.actor)
 

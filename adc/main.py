@@ -32,7 +32,7 @@ if __name__ == '__main__':
                 'gradient_steps' : 1,
                 'target_update_interval' : 1,
                 'learning_steps' : 0,
-                'epsilon' : 0.1,
+                'epsilon' : 1,
             }
 
     agent = ADCAgent(**params)
