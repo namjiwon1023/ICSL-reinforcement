@@ -22,7 +22,9 @@ class CriticNetwork(nn.Module):
                                         nn.Linear(20, 1))
 
 
-        self.advantage = nn.Sequential(nn.Linear(30, 100))
+        self.advantage = nn.Sequential(nn.Linear(30, 100),
+                                        nn.ReLU(),
+                                        nn.Linear(100, 1))
 
         self.reset_parameters(self.feature)
         self.reset_parameters(self.state_value)
